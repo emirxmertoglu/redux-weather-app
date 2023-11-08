@@ -1,25 +1,31 @@
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchWeather } from "@/reducers/weatherReducer";
 
 const Location = () => {
+  const dispatch = useDispatch();
+
   const [location, setLocation] = useState(null);
-  console.log("🚀 ~ file: index.jsx:5 ~ Location ~ location:", location);
 
   useEffect(() => {
     if (!location) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-      });
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          dispatch(
+            fetchWeather({
+              lat: position.coords.latitude,
+              lon: position.coords.longitude,
+            })
+          );
+        },
+        (error) => console.log({ error })
+      );
     }
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (location) {
-      console.log({ location });
-    }
+    dispatch(fetchWeather({ q: location }));
   };
 
   const handleChange = (e) => {
